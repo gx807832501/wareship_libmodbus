@@ -1,0 +1,12 @@
+[
+ {
+  "path": "/packages/iot/libmodbus", 
+  "ver": "latest", 
+  "name": "LIBMODBUS"
+ }, 
+ {
+  "path": "/packages/iot/netutils", 
+  "ver": "latest", 
+  "name": "NETUTILS"
+ }
+]
