@@ -85,6 +85,8 @@
 #define RT_USING_SERIAL
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
+#define RT_USING_I2C
+#define RT_USING_I2C_BITOPS
 #define RT_USING_PIN
 #define RT_USING_RTC
 #define RTC_SYNC_USING_NTP
@@ -242,6 +244,11 @@
 #define BSP_USING_UART1
 #define BSP_USING_UART2
 #define BSP_USING_UART4
+#define BSP_USING_I2C1
+/* Notice: PB6 --> 22; PB7 --> 23 */
+#define BSP_I2C1_SCL_PIN 22
+#define BSP_I2C1_SDA_PIN 23
+
 #define BSP_USING_ONCHIP_RTC
 #define BSP_USING_WDT
 

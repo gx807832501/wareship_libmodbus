@@ -13,62 +13,44 @@
 #include <board.h>
 #include <sys\time.h>
 
-#include "control.h"
+#include "stdStruct.h"
 
-#include "modbus.h"
+#include "sys_task.h"
+
+#include "control.h"
 /*-------------------------------------------定义变量----------------------------------------------------*/
-uint16_t tab_reg[64]={0};
+/*********************************************************************************************************
+  定义任务句柄
+*********************************************************************************************************/
+static rt_thread_t sys_task = RT_NULL;//系统任务句柄
+
+Struct_SysData SysData;//系统参数
+Struct_monitorData monitorData;//监控数据
 
 int main(void)
 {
-	modbus_t *mb;
-	
 //led初始化	
 	led_init();
 //relay初始化
 	relay_init();
 	
-	mb = modbus_new_rtu("/dev/uart2", 115200, 'N', 8, 1);
-	modbus_set_debug(mb, 1);
-	modbus_rtu_set_serial_mode(mb,MODBUS_RTU_RS232);
-	modbus_set_slave(mb,1);
-	modbus_connect(mb);
-	modbus_set_response_timeout(mb,0,1000000);
-	
-	int num = 0;
-	while(1)
+//创建sys_task
+	sys_task = rt_thread_create( "sys_task",
+															  sys_task_entry,
+																RT_NULL,
+																1024,
+																11,
+																5
+	);
+	if (sys_task != RT_NULL)
 	{
-		memset(tab_reg,0,64*2);
-		int regs=modbus_read_registers(mb, 0, 20, tab_reg); 
-		
-		rt_kprintf("-------------------------------------------\n");
-		rt_kprintf("[%4d][read num = %d]",20 - num,regs);
-		num --;
-		
-		for(uint8_t Loop_i = 0; Loop_i < 20; Loop_i ++)
-		{
-			rt_kprintf("<%#x>",tab_reg[Loop_i]);
-		}
-		rt_kprintf("\n");
-		rt_kprintf("-------------------------------------------\n");
-		
-		rt_thread_mdelay(1000);
+		rt_thread_startup(sys_task);
 	}
-	modbus_close(mb); 
-	modbus_free(mb);
 	
 	return RT_EOK;
 }
 
 
 
-//获取设备ID
-void GetDeviceSN(int argc, char**argv)
-{
-	rt_int32_t temp;
-	
-	temp = *(__IO uint32_t*)(0x1FFFF7E8);//获取STM32的唯一ID
-	rt_kprintf("SN:%x\n", temp);
-}
-MSH_CMD_EXPORT(GetDeviceSN, Get the Device SN);
+
 
